@@ -1,0 +1,39 @@
+version: "5.0.0"
+
+services:
+  bot:
+    build: .
+    image: users_bot:alpine
+    container_name: usersbot_con
+    restart: always
+    command: ["python3", "main.py"]
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=${DB_PORT}
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+    depends_on:
+      - pg
+    networks:
+      - bot_net
+
+  pg:
+    image: postgres:alpine
+    container_name: bot_pg_db
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 1
+    ports:
+      - "5432:5432"
+    networks:
+      - bot_net
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+networks:
+  bot_net:
+    driver: bridge
+
+volumes:
+  pg_data:
